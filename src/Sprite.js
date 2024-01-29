@@ -9,7 +9,7 @@ class Sprite{
      * @param {p5} [p5Inst = null] reference to the p5 instance if in instance mode, if not specified try to call functions blind to windows
      */
     constructor(source, pos, width, height, angle = 0, p5Inst = null){
-        this.pos = {x: pos.x, x: pos.y};
+        this.pos = {x: pos.x, y: pos.y};
         this.ang = angle;
         this.src = source;
         this.width = width;
