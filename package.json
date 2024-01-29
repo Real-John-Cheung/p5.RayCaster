@@ -1,0 +1,31 @@
+{
+  "name": "p5.raycaster",
+  "version": "0.0.1",
+  "description": "a simple p5js library for semi 3d rendering with ray casting",
+  "main": "src/p5.RayCaster.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.config.js",
+    "genDoc": "jsdoc -r src && rm -r docs/api && cp -r out docs/api && rm -r out"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Real-John-Cheung/p5.RayCaster.git"
+  },
+  "keywords": [
+    "ray casting",
+    "p5",
+    "semi-3d",
+    "library"
+  ],
+  "author": "JohnC",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/Real-John-Cheung/p5.RayCaster/issues"
+  },
+  "homepage": "https://github.com/Real-John-Cheung/p5.RayCaster#readme",
+  "devDependencies": {
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
