@@ -23,10 +23,10 @@ include `dist/p5.RayCaster.min.js` in your project
 ```
 This will provide the `RayCaster` module.
 # API
-[click here]()
+[click here](https://real-john-cheung.github.io/p5.RayCaster/api/)
 
 # Example
-* [basic]()
+* [basic](https://real-john-cheung.github.io/p5.RayCaster/example/basic/)
 * ...
 
 # How to use
@@ -34,6 +34,7 @@ This will provide the `RayCaster` module.
 There are four basic component in p5.RayCaster library, `World`, `Camera`, and `Sprite`
 
 ### World
+`World` class apis: [click here](https://real-john-cheung.github.io/p5.RayCaster/api/World.html)
 
 `World` is the type of objects that store information about your scene. You can think about it as a game world, the major properties it has include `map`, `table`, `skyBok`, `textureMap`, `sprites`, and `cameras`.
 
@@ -175,9 +176,10 @@ world.removeSprite(0); //remove a sprite by index
 `World.cameras` is an array storing the cameras attached to this world, see the `Camera` section for more information 
 
 #### other functions
-See the API documentation for all functions in `World` class.
+See the API documentation for all functions in `World` class. 
 
 ### Camera
+`Camera` class apis: [click here](https://real-john-cheung.github.io/p5.RayCaster/api/Camera.html)
 
 `Camera` object deal with the rendering of the scene. To create a camera, use `RayCaster.createCamera()`.
 ```js
@@ -320,6 +322,7 @@ camera.teleportTo(positionInNewWorld, facingDirectionInNewWorld, newWorld);
 `Camera` class also has some functions for simple interaction with the world. If the camera is facing a closed door or a push wall, call `Camera.openDoor()` to open it. When facing a open door, call `Camera.closeDoor()` to close it. Use `Camera.moveDoor()` to check the state of the camera facing door and perform corresponding action.
 
 ### Sprite 
+`Sprite` class apis: [click here](https://real-john-cheung.github.io/p5.RayCaster/api/Sprite.html)
 
 `Sprite` is object for things that are "floating" in the world, which means their position can be changed. To create a `Sprite`, use `RayCaster.createSprite()`.
 ```js
