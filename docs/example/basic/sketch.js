@@ -113,6 +113,7 @@ function setup() {
     keyboardController = RayCaster.initKeyboardControl();
     pointerLockController = RayCaster.initPointerLockControl(camera, canvas.canvas);
     keyboardController.addItem("showMiniMap", ["m"], "up", false);
+    keyboardController.addItem("teleport", ["t"]);
     camera.setMiniMapRenderOptions(miniMapOptions);
     camera.renderFrame();
 }
@@ -164,6 +165,10 @@ function cameraMove(){
     }
     if (keyboardController.tiltDown){
         camera.tilt(-TURN_SPEED);
+    }
+
+    if (keyboardController.teleport) {
+        camera.teleportTo({x:20,y:20}, {x:-1, y:-1});
     }
 }
 

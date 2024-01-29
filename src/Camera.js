@@ -96,6 +96,7 @@ class Camera {
      * @param {p5.Renderer} [canvas=null] the canvas this camera to draw on, can be the main p5 canvas or a p5.Graphics object
      */
     constructor(pos, dir, fov, world = null, canvas = null) {
+        this.fov = fov;
         this.pos = { x: pos.x, y: pos.y };
         this.dir = Util.normalize(dir);
         this.tilting = 0;
@@ -168,11 +169,12 @@ class Camera {
         this.pos.x = point.x;
         this.pos.y = point.y;
         if (dir) {
+            dir = Util.normalize(dir);
             this.dir.x = dir.x;
             this.dir.y = dir.y;
             this.plane = Util.rotateVector(this.dir, -Math.PI / 2);
-            this.plane.x = this.plane.x * fov;
-            this.plane.y = this.plane.y * fov;
+            this.plane.x = this.plane.x * this.fov;
+            this.plane.y = this.plane.y * this.fov;
         }
         if (world && world !== null) {
             this.removeFromWorld();
