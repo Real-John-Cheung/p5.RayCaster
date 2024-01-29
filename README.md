@@ -473,4 +473,4 @@ keyboardControl.removeItem("jump");
 // now the jump control is removed
 ```
 
-To disable the controller, call `KeyboardControl.removeControl()`. To enable it again, call `KeyboardControl.regControl()`.
+To disable the controller, call `KeyboardControl.removeControl()`. To enable it again, call `KeyboardControl.regControl()`. 
