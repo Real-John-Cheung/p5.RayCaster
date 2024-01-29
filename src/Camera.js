@@ -865,7 +865,7 @@ class Camera {
                         let drawWidth = clipEndX - clipStartX;
                         if (drawWidth < 0) drawWidth = 0;
                         let drawAng = Math.atan2(spriteY, spriteX);
-                        this.world.sprites[this.spritesOrderBuffer[i]].updateRotation(drawAng);
+                        this.world.sprites[this.spritesOrderBuffer[i]].updateRotationFrame(drawAng);
                         p.push();
                         p.drawingContext.imageSmoothingEnabled = false;
                         p.image(this.world.sprites[this.spritesOrderBuffer[i]].buffer, clipStartX, spDrawStartY, drawWidth, spriteHeight, drawXStart, 0, drawXEnd, this.world.sprites[this.spritesOrderBuffer[i]].height)
