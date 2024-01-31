@@ -27,7 +27,9 @@ This will provide the `RayCaster` module.
 
 # Example
 * [basic](https://real-john-cheung.github.io/p5.RayCaster/example/basic/)
-* ...
+* [sprite](https://real-john-cheung.github.io/p5.RayCaster/example/sprite/)
+* [texture](https://real-john-cheung.github.io/p5.RayCaster/example/texture/)
+* ... 
 
 # How to use
 ## Basic concept
