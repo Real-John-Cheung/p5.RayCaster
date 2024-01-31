@@ -363,7 +363,7 @@ You can have animation group for your `Sprite`, so your `Sprite` can have differ
 
 #### Movement
 
-Similar to `Camera`, `Sprite` will refer to the world it is in to constrain the movement. use `Sprite.move({x, y})` to move a sprite and `Sprite.rotate(angle)` to rotate a sprite. Use `Sprite.setYAdjustment()` to set update `Sprite.yAdjustment`, which can move the sprite up and down.
+Similar to `Camera`, `Sprite` will refer to the world it is in to constrain the movement. use `Sprite.move({x, y})` to move a sprite and `Sprite.rotate(angle)` to rotate a sprite. Use `Sprite.setYAdjustment()` to set or update `Sprite.yAdjustment`, which can move the sprite up and down.
 
 ## Controls
 The library includes three basic controllers to handle inputs from mouse and keyboard. They should be enough for most of the cases, however, if you wish to have a more innovative and different way of interaction, you should write your own control methods.
@@ -449,7 +449,7 @@ defaultKeyMap = {
 }
 ```
 
-For each of the entry inside the `keyMap`, `KeyboardControl` will have a automatically updated property of the same name. Each of the `keyMap` item can have 3 properties. It must has a `keys` property indicating the keys it watching for. It can have a `toggle` property with a value of either `up` or `down`, if so, the value will be toggle at `keyup` or `keydown`. It can have a `initValue` property, which will be use to set the default value of the property when there's no keyboard input.
+For each of the entry inside the `keyMap`, `KeyboardControl` will have a automatically updated property of the same name. Each of the `keyMap` item can have 3 properties. It must has a `keys` property indicating the keys it watching for. It can have a `toggle` property with a value of either `up` or `down`, if so, the value will be toggled at `keyup` or `keydown`. It can have a `initValue` property, which will be use to set the default value of the property when there's no keyboard input.
 
 For example, with the default `keyMap`, when space key is pressed, `KeyboardControl.moveDoor` will be set to `true`. Below is an example of customize entry with additional properties:
 

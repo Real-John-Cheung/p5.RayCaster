@@ -619,10 +619,9 @@ class Camera {
                                         }
                                     } else {
                                         mapY += stepY;
-                                        idx = mapX + mapY * this.world.width;
                                         side = 1;
                                         rayTex = Math.floor(rayTex / 10) + this.world.table.MAP_DOOR_FRAME;
-                                        wallOffset = 0;
+                                        wallOffset.x = 0;
                                     }
                                 }
                             }
@@ -737,7 +736,7 @@ class Camera {
                 }
                 wallX -= Math.floor(wallX);
 
-                if (rayTex % 10 === this.world.table.MAP_DOOR) wallX += this.world.doorOffsets[mapX + mapX * this.world.width];
+                if (rayTex % 10 === this.world.table.MAP_DOOR) wallX += this.world.doorOffsets[mapX + mapY * this.world.width];
 
                 let wallTex = this.world.textureMap.get(rayTex);
                 if (typeof wallTex === "string") {
