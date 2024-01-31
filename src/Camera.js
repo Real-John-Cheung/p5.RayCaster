@@ -410,6 +410,8 @@ class Camera {
         if (this.miniMapOptions.camera.stroke) {
             p.stroke(this.miniMapOptions.camera.stroke);
             if (this.miniMapOptions.camera.strokeWeight) p.strokeWeight(this.miniMapOptions.camera.strokeWeight);
+        } else {
+            p.noStroke();
         }
         p.ellipse(camX, camY, this.miniMapOptions.camera.dia * mapMulti.x, this.miniMapOptions.camera.dia * mapMulti.y);
 
@@ -426,6 +428,8 @@ class Camera {
         if (this.miniMapOptions.sprite.stroke) {
             p.stroke(this.miniMapOptions.sprite.stroke);
             if (this.miniMapOptions.sprite.strokeWeight) p.strokeWeight(this.miniMapOptions.sprite.strokeWeight);
+        } else {
+            p.noStroke();
         }
         this.world.sprites.forEach(sp => {
             if (sp.pos.x > camBlock.x - size.x && sp.pos.x < camBlock.x + size.x && sp.pos.y > camBlock.y - size.y && sp.pos.y < camBlock.y + size.y) {
@@ -812,13 +816,13 @@ class Camera {
 
 
             for (let i = 0; i < this.world.sprites.length; i++) {
-                let spriteX = this.world.sprites[this.spritesOrderBuffer[i]].pos.x - this.pos.x;
-                let spriteY = this.world.sprites[this.spritesOrderBuffer[i]].pos.y - this.pos.y;
+                const sp = this.world.sprites[this.spritesOrderBuffer[i]];
+                let spriteX = sp.pos.x - this.pos.x;
+                let spriteY = sp.pos.y - this.pos.y;
 
                 let invDet = 1 / (this.plane.x * this.dir.y - this.dir.x * this.plane.y);
                 let transformX = invDet * (this.dir.y * spriteX - this.dir.x * spriteY);
                 let transformY = invDet * (this.plane.x * spriteY - this.plane.y * spriteX);
-
                 if (transformY > 0) {
                     for (tp; tp >= 0; tp--) {
                         let tpDist = (this.pos.x - tpWalls[tp].mapX) * (this.pos.x - tpWalls[tp].mapX) + (this.pos.y - tpWalls[tp].mapY) * (this.pos.y - tpWalls[tp].mapY);
@@ -830,7 +834,7 @@ class Camera {
                     }
 
                     let spriteHeight = Math.abs(Math.floor(canvas.height / transformY));
-                    let baseline = (0.5 + verticalAdjustment) * canvas.height;
+                    let baseline = (0.5 + verticalAdjustment - sp.yAdjustment) * canvas.height;
                     let spDrawStartY = baseline - spriteHeight / 2;
                     let spriteScreenX = Math.floor(canvas.width / 2) * (1 + transformX / transformY);
                     let spriteWidth = Math.abs(Math.floor(canvas.height / transformY));
@@ -857,18 +861,18 @@ class Camera {
                         }
                     }
                     if (clipStartX !== clipEndX && clipStartX < canvas.width && clipEndX > 0) {
-                        let scaleDelta = this.world.sprites[this.spritesOrderBuffer[i]].width / spriteWidth;
+                        let scaleDelta = sp.width / spriteWidth;
                         let drawXStart = Math.floor((clipStartX - spDrawStartX) * scaleDelta);
                         if (drawXStart < 0) drawXStart = 0;
                         let drawXEnd = Math.floor((clipEndX - clipStartX) * scaleDelta) + 1;
-                        if (drawXEnd > this.world.sprites[this.spritesOrderBuffer[i]].width) drawXEnd = this.world.sprites[this.spritesOrderBuffer[i]].width;
+                        if (drawXEnd > sp.width) drawXEnd = sp.width;
                         let drawWidth = clipEndX - clipStartX;
                         if (drawWidth < 0) drawWidth = 0;
                         let drawAng = Math.atan2(spriteY, spriteX);
-                        this.world.sprites[this.spritesOrderBuffer[i]].updateRotationFrame(drawAng);
+                        sp.updateRotationFrame(drawAng);
                         p.push();
                         p.drawingContext.imageSmoothingEnabled = false;
-                        p.image(this.world.sprites[this.spritesOrderBuffer[i]].buffer, clipStartX, spDrawStartY, drawWidth, spriteHeight, drawXStart, 0, drawXEnd, this.world.sprites[this.spritesOrderBuffer[i]].height)
+                        p.image(sp.buffer, clipStartX, spDrawStartY, drawWidth, spriteHeight, drawXStart, 0, drawXEnd, sp.height)
                         p.pop();
                     }
                 }

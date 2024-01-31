@@ -73,12 +73,14 @@ export function createWorld(width, height, data, textureMap, skyBox, typeTable, 
  * @param {number} width 
  * @param {number} height 
  * @param {number} [angle] optional
+ * @param {number} [yAdjustment] optional  [-0.5, 0.5] -0.5 ~ 0.5, negative number will make the sprite appear lower and positive number will make it appear higher
+ * @param {number} [animationGap] optional  number of frame for before change to the next animation
  * @param {p5} [p5Inst] optional, needed when using p5 instance mode 
  * 
  * @returns a Sprite object
  */
-export function createSprite(spriteSourceImage, position, width, height, angle, p5Inst) {
-    return new Sprite(spriteSourceImage, position, width, height, angle, p5Inst);
+export function createSprite(spriteSourceImage, position, width, height, angle, yAdjustment, animationGap, p5Inst) {
+    return new Sprite(spriteSourceImage, position, width, height, angle, yAdjustment, animationGap, p5Inst);
 }
 
 /**

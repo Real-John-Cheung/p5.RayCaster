@@ -33,6 +33,88 @@ import World from "./World";
  * class for camera 
  */
 class Camera {
+
+    static defaultMiniMapOptions = {
+        border: {
+            stroke: "white",
+            strokeWeight: 3,
+        },
+        background: {
+            fill: "grey"
+        },
+        sprite: {
+            fill: "purple",
+            stroke: undefined,
+            strokeWeight: 0,
+            dia: .5
+        },
+        camera: {
+            fill: "yellow",
+            stroke: undefined,
+            strokeWeight: 0,
+            dia: .5
+        },
+        fov: {
+            stroke: "black",
+            strokeWeight: 1,
+        },
+        blocks: new Map([
+            [0, {}],
+            [1, { fill: "red" }],
+            [3, { fill: "blue" }],
+            [4, { fill: "blue" }],
+            [5, { fill: "red", stroke: "blue", strokeWeight: 1}],
+            [6, { fill: "cyan" }],
+            [7, { stroke: "red", strokeWeight: 3 }],
+            [8, { stroke: "red",  strokeWeight: 3}],
+            [9, { fill: "rgba(255,0,0,0.25)" }]
+        ]),
+        MAP_FLOOR: {
+            fill: undefined,
+            stroke: undefined,
+            strokeWeight: 0,
+        },
+        MAP_WALL: {
+            fill: "red",
+            stroke: undefined,
+            strokeWeight: 0,
+        },
+        MAP_DOOR: {
+            fill: "blue",
+            stroke: undefined,
+            strokeWeight: 0,
+        },
+        MAP_DOOR_FRAME: {
+            fill: "black",
+            stroke: "blue",
+            strokeWeight: 2,
+        },
+        MAP_PUSH_WALL: {
+            fill: "red",
+            stroke: "blue",
+            strokeWeight: 1,
+        },
+        MAP_CIRCULAR_COLUMN: {
+            fill: "cyan",
+            stroke: undefined,
+            strokeWeight: 0,
+        },
+        MAP_DIA_WALL_TR_BL: {
+            fill: undefined,
+            stroke: "red",
+            strokeWeight: 3,
+        },
+        MAP_DIA_WALL_TL_BR: {
+            fill: undefined,
+            stroke: "red",
+            strokeWeight: 3,
+        },
+        MAP_TRANSPARENT_WALL: {
+            fill: "rgba(255,0,0,0.25)",
+            stroke: undefined,
+            strokeWeight: 0,
+        }
+    }
     /**
      * 
      * @param {Vector} pos {x,y} or a p5.Vector object
@@ -42,6 +124,7 @@ class Camera {
      * @param {p5.Renderer} [canvas=null] the canvas this camera to draw on, can be the main p5 canvas or a p5.Graphics object
      */
     constructor(pos, dir, fov, world = null, canvas = null) {
+        this.fov = fov;
         this.pos = { x: pos.x, y: pos.y };
         this.dir = Util.normalize(dir);
         this.tilting = 0;
@@ -63,76 +146,7 @@ class Camera {
         this.spritesUpdateGap = 4; // frame
         if (world !== null) this.updateSpritesBuffers();
         //minimap render options
-        this.miniMapOptions = {
-            border: {
-                stroke: "white",
-                strokeWeight: 3,
-            },
-            background: {
-                fill: "grey"
-            },
-            sprite: {
-                fill: "purple",
-                stroke: undefined,
-                strokeWeight: 0,
-                dia: .5
-            },
-            camera: {
-                fill: "yellow",
-                stroke: undefined,
-                strokeWeight: 0,
-                dia: .5
-            },
-            fov: {
-                stroke: "black",
-                strokeWeight: 1,
-            },
-            MAP_FLOOR: {
-                fill: undefined,
-                stroke: undefined,
-                strokeWeight: 0,
-            },
-            MAP_WALL: {
-                fill: "red",
-                stroke: undefined,
-                strokeWeight: 0,
-            },
-            MAP_DOOR: {
-                fill: "blue",
-                stroke: undefined,
-                strokeWeight: 0,
-            },
-            MAP_DOOR_FRAME: {
-                fill: "black",
-                stroke: "blue",
-                strokeWeight: 2,
-            },
-            MAP_PUSH_WALL: {
-                fill: "red",
-                stroke: "black",
-                strokeWeight: 1,
-            },
-            MAP_CIRCULAR_COLUMN: {
-                fill: "cyan",
-                stroke: undefined,
-                strokeWeight: 0,
-            },
-            MAP_DIA_WALL_TR_BL: {
-                fill: undefined,
-                stroke: "red",
-                strokeWeight: 3,
-            },
-            MAP_DIA_WALL_TL_BR: {
-                fill: undefined,
-                stroke: "red",
-                strokeWeight: 3,
-            },
-            MAP_TRANSPARENT_WALL: {
-                fill: "rgba(255,0,0,0.25)",
-                stroke: undefined,
-                strokeWeight: 0,
-            }
-        }
+        this.miniMapOptions = Camera.defaultMiniMapOptions;
     }
 
     /**
@@ -183,11 +197,12 @@ class Camera {
         this.pos.x = point.x;
         this.pos.y = point.y;
         if (dir) {
+            dir = Util.normalize(dir);
             this.dir.x = dir.x;
             this.dir.y = dir.y;
             this.plane = Util.rotateVector(this.dir, -Math.PI / 2);
-            this.plane.x = this.plane.x * fov;
-            this.plane.y = this.plane.y * fov;
+            this.plane.x = this.plane.x * this.fov;
+            this.plane.y = this.plane.y * this.fov;
         }
         if (world &amp;&amp; world !== null) {
             this.removeFromWorld();
@@ -281,7 +296,7 @@ class Camera {
     /**
      * move the door the camera facing
      */
-    moveDoor(){
+    moveDoor() {
         let checkMapX = Math.floor(this.pos.x + this.dir.x);
         let checkMapY = Math.floor(this.pos.y + this.dir.y);
         let checkMapX2 = Math.floor(this.pos.x + this.dir.x * 2);
@@ -324,149 +339,94 @@ class Camera {
                 let xx = canvasX + renderWidth - ((x + 1) * mapMulti.x);
                 let yy = canvasY + y * mapMulti.y;
                 //TODO: redo this mess
-                switch (this.world.map[idx] % 10) {
-                    case this.world.table.MAP_FLOOR:
-                        if (this.miniMapOptions.MAP_FLOOR.icon) {
-                            p.image(this.miniMapOptions.MAP_FLOOR.icon, xx, yy, mapMulti.x, mapMulti.y);
+                if (this.miniMapOptions.blocks.has(this.world.map[idx])) {
+                    let ttt = this.miniMapOptions.blocks.get((this.world.map[idx]));
+                    if (ttt.icon){
+                        p.image(ttt.icon, xx, yy, mapMulti.x, mapMulti.y);
+                    } else {
+                        ttt.fill ? p.fill(ttt.fill) : p.noFill();
+                        if (ttt.stroke){
+                            p.stroke(ttt.stroke);
+                            if (ttt.strokeWeight) p.strokeWeight(ttt.strokeWeight);
                         } else {
-                            this.miniMapOptions.MAP_FLOOR.fill ? p.fill(this.miniMapOptions.MAP_FLOOR.fill) : p.noFill();
-                            if (this.miniMapOptions.MAP_FLOOR.stroke) {
-                                p.stroke(this.miniMapOptions.MAP_FLOOR.stroke);
-                                if (this.miniMapOptions.MAP_FLOOR.strokeWeight) p.strokeWeight(this.miniMapOptions.MAP_FLOOR.strokeWeight);
-                            } else {
-                                p.noStroke();
-                            }
-                            p.rect(xx, yy, mapMulti.x, mapMulti.y);
+                            p.noStroke();
                         }
-                        break;
-                    case this.world.table.MAP_WALL:
-                        if (this.miniMapOptions.MAP_WALL.icon) {
-                            p.image(this.miniMapOptions.MAP_WALL.icon, xx, yy, mapMulti.x, mapMulti.y);
+                        switch(this.world.map[idx] % 10){
+                            default:
+                                p.rect(xx, yy, mapMulti.x, mapMulti.y);
+                                break;
+                            case this.world.table.MAP_DIA_WALL_TR_BL:
+                                p.line(xx, yy, xx + mapMulti.x, yy + mapMulti.y);
+                                break;
+                            case this.world.table.MAP_DIA_WALL_TL_BR:
+                                p.line(xx + mapMulti.x, yy, xx, yy + mapMulti.y);
+                                break;
+                            case this.world.table.MAP_CIRCULAR_COLUMN:
+                                p.ellipse(xx + mapMulti.x / 2, yy + mapMulti.y / 2, mapMulti.x, mapMulti.y);
+                                break;
+                        }
+                    }
+                } else {
+                    let ttt;
+                    switch (this.world.map[idx] % 10) {
+                        case this.world.table.MAP_FLOOR:
+                            ttt = this.miniMapOptions.MAP_FLOOR;
+                            break;
+                        case this.world.table.MAP_WALL:
+                            ttt = this.miniMapOptions.MAP_WALL;
+                            break;
+                        case this.world.table.MAP_WALL_SHADOW:
+                            ttt = this.miniMapOptions.MAP_WALL;
+                            break;
+                        case this.world.table.MAP_DOOR:
+                            ttt = this.miniMapOptions.MAP_DOOR;
+                            break;
+                        case this.world.table.MAP_DOOR_FRAME:
+                            ttt = this.miniMapOptions.MAP_DOOR_FRAME;
+                            break;
+                        case this.world.table.MAP_PUSH_WALL:
+                            ttt = this.miniMapOptions.MAP_PUSH_WALL
+                            break;
+                        case this.world.table.MAP_CIRCULAR_COLUMN:
+                            ttt = this.miniMapOptions.MAP_CIRCULAR_COLUMN;
+                            break;
+                        case this.world.table.MAP_DIA_WALL_TR_BL:
+                            ttt = this.miniMapOptions.MAP_DIA_WALL_TR_BL;
+                            break;
+                        case this.world.table.MAP_DIA_WALL_TL_BR:
+                            ttt = this.miniMapOptions.MAP_DIA_WALL_TL_BR;
+                            break;
+                        case this.world.table.MAP_TRANSPARENT_WALL:
+                            ttt = this.miniMapOptions.MAP_TRANSPARENT_WALL
+                            break;
+                        default:
+                            break;
+                    }
+                    if (ttt.icon){
+                        p.image(ttt.icon, xx, yy, mapMulti.x, mapMulti.y);
+                    } else {
+                        ttt.fill ? p.fill(ttt.fill) : p.noFill();
+                        if (ttt.stroke){
+                            p.stroke(ttt.stroke);
+                            if (ttt.strokeWeight) p.strokeWeight(ttt.strokeWeight);
                         } else {
-                            this.miniMapOptions.MAP_WALL.fill ? p.fill(this.miniMapOptions.MAP_WALL.fill) : p.noFill();
-                            if (this.miniMapOptions.MAP_WALL.stroke) {
-                                p.stroke(this.miniMapOptions.MAP_WALL.stroke);
-                                if (this.miniMapOptions.MAP_WALL.strokeWeight) p.strokeWeight(this.miniMapOptions.MAP_WALL.strokeWeight);
-                            } else {
-                                p.noStroke();
-                            }
-                            p.rect(xx, yy, mapMulti.x, mapMulti.y);
+                            p.noStroke();
                         }
-                        break;
-                    case this.world.table.MAP_WALL_SHADOW:
-                        if (this.miniMapOptions.MAP_WALL.icon) {
-                            p.image(this.miniMapOptions.MAP_WALL.icon, xx, yy, mapMulti.x, mapMulti.y);
-                        } else {
-                            this.miniMapOptions.MAP_WALL.fill ? p.fill(this.miniMapOptions.MAP_WALL.fill) : p.noFill();
-                            if (this.miniMapOptions.MAP_WALL.stroke) {
-                                p.stroke(this.miniMapOptions.MAP_WALL.stroke);
-                                if (this.miniMapOptions.MAP_WALL.strokeWeight) p.strokeWeight(this.miniMapOptions.MAP_WALL.strokeWeight);
-                            } else {
-                                p.noStroke();
-                            }
-                            p.rect(xx, yy, mapMulti.x, mapMulti.y);
+                        switch(this.world.map[idx] % 10){
+                            default:
+                                p.rect(xx, yy, mapMulti.x, mapMulti.y);
+                                break;
+                            case this.world.table.MAP_DIA_WALL_TR_BL:
+                                p.line(xx, yy, xx + mapMulti.x, yy + mapMulti.y);
+                                break;
+                            case this.world.table.MAP_DIA_WALL_TL_BR:
+                                p.line(xx + mapMulti.x, yy, xx, yy + mapMulti.y);
+                                break;
+                            case this.world.table.MAP_CIRCULAR_COLUMN:
+                                p.ellipse(xx + mapMulti.x / 2, yy + mapMulti.y / 2, mapMulti.x, mapMulti.y);
+                                break;
                         }
-                        break;
-                    case this.world.table.MAP_DOOR:
-                        if (this.miniMapOptions.MAP_DOOR.icon) {
-                            p.image(this.miniMapOptions.MAP_DOOR.icon, xx, yy, mapMulti.x, mapMulti.y);
-                        } else {
-                            this.miniMapOptions.MAP_DOOR.fill ? p.fill(this.miniMapOptions.MAP_DOOR.fill) : p.noFill();
-                            if (this.miniMapOptions.MAP_DOOR.stroke) {
-                                p.stroke(this.miniMapOptions.MAP_DOOR.stroke);
-                                if (this.miniMapOptions.MAP_DOOR.strokeWeight) p.strokeWeight(this.miniMapOptions.MAP_DOOR.strokeWeight);
-                            } else {
-                                p.noStroke();
-                            }
-                            p.rect(xx, yy, mapMulti.x, mapMulti.y);
-                        }
-                        break;
-                    case this.world.table.MAP_DOOR_FRAME:
-                        if (this.miniMapOptions.MAP_DOOR_FRAME.icon) {
-                            p.image(this.miniMapOptions.MAP_DOOR_FRAME.icon, xx, yy, mapMulti.x, mapMulti.y);
-                        } else {
-                            this.miniMapOptions.MAP_DOOR_FRAME.fill ? p.fill(this.miniMapOptions.MAP_DOOR_FRAME.fill) : p.noFill();
-                            if (this.miniMapOptions.MAP_DOOR_FRAME.stroke) {
-                                p.stroke(this.miniMapOptions.MAP_DOOR_FRAME.stroke);
-                                if (this.miniMapOptions.MAP_DOOR_FRAME.strokeWeight) p.strokeWeight(this.miniMapOptions.MAP_DOOR_FRAME.strokeWeight);
-                            } else {
-                                p.noStroke();
-                            }
-                            p.rect(xx, yy, mapMulti.x, mapMulti.y);
-                        }
-                        break;
-                    case this.world.table.MAP_PUSH_WALL:
-                        if (this.miniMapOptions.MAP_PUSH_WALL.icon) {
-                            p.image(this.miniMapOptions.MAP_PUSH_WALL.icon, xx, yy, mapMulti.x, mapMulti.y);
-                        } else {
-                            this.miniMapOptions.MAP_PUSH_WALL.fill ? p.fill(this.miniMapOptions.MAP_PUSH_WALL.fill) : p.noFill();
-                            if (this.miniMapOptions.MAP_PUSH_WALL.stroke) {
-                                p.stroke(this.miniMapOptions.MAP_PUSH_WALL.stroke);
-                                if (this.miniMapOptions.MAP_PUSH_WALL.strokeWeight) p.strokeWeight(this.miniMapOptions.MAP_PUSH_WALL.strokeWeight);
-                            } else {
-                                p.noStroke();
-                            }
-                            p.rect(xx, yy, mapMulti.x, mapMulti.y);
-                        }
-                        break;
-                    case this.world.table.MAP_CIRCULAR_COLUMN:
-                        if (this.miniMapOptions.MAP_CIRCULAR_COLUMN.icon) {
-                            p.image(this.miniMapOptions.MAP_CIRCULAR_COLUMN.icon, xx, yy, mapMulti.x, mapMulti.y);
-                        } else {
-                            this.miniMapOptions.MAP_CIRCULAR_COLUMN.fill ? p.fill(this.miniMapOptions.MAP_CIRCULAR_COLUMN.fill) : p.noFill();
-                            if (this.miniMapOptions.MAP_CIRCULAR_COLUMN.stroke) {
-                                p.stroke(this.miniMapOptions.MAP_CIRCULAR_COLUMN.stroke);
-                                if (this.miniMapOptions.MAP_CIRCULAR_COLUMN.strokeWeight) p.strokeWeight(this.miniMapOptions.MAP_CIRCULAR_COLUMN.strokeWeight);
-                            } else {
-                                p.noStroke();
-                            }
-                            p.ellipse(xx + mapMulti.x / 2, yy + mapMulti.y / 2, mapMulti.x, mapMulti.y);
-                        }
-                        break;
-                    case this.world.table.MAP_DIA_WALL_TR_BL:
-                        if (this.miniMapOptions.MAP_DIA_WALL_TR_BL.icon) {
-                            p.image(this.miniMapOptions.MAP_DIA_WALL_TR_BL.icon, xx, yy, mapMulti.x, mapMulti.y);
-                        } else {
-                            this.miniMapOptions.MAP_DIA_WALL_TR_BL.fill ? p.fill(this.miniMapOptions.MAP_DIA_WALL_TR_BL.fill) : p.noFill();
-                            if (this.miniMapOptions.MAP_DIA_WALL_TR_BL.stroke) {
-                                p.stroke(this.miniMapOptions.MAP_DIA_WALL_TR_BL.stroke);
-                                if (this.miniMapOptions.MAP_DIA_WALL_TR_BL.strokeWeight) p.strokeWeight(this.miniMapOptions.MAP_DIA_WALL_TR_BL.strokeWeight);
-                            } else {
-                                p.noStroke();
-                            }
-                            p.line(xx, yy, xx + mapMulti.x, yy + mapMulti.y);
-                        }
-                        break;
-                    case this.world.table.MAP_DIA_WALL_TL_BR:
-                        if (this.miniMapOptions.MAP_DIA_WALL_TL_BR.icon) {
-                            p.image(this.miniMapOptions.MAP_DIA_WALL_TL_BR.icon, xx, yy, mapMulti.x, mapMulti.y);
-                        } else {
-                            this.miniMapOptions.MAP_DIA_WALL_TL_BR.fill ? p.fill(this.miniMapOptions.MAP_DIA_WALL_TL_BR.fill) : p.noFill();
-                            if (this.miniMapOptions.MAP_DIA_WALL_TL_BR.stroke) {
-                                p.stroke(this.miniMapOptions.MAP_DIA_WALL_TL_BR.stroke);
-                                if (this.miniMapOptions.MAP_DIA_WALL_TL_BR.strokeWeight) p.strokeWeight(this.miniMapOptions.MAP_DIA_WALL_TL_BR.strokeWeight);
-                            } else {
-                                p.noStroke();
-                            }
-                            p.line(xx + mapMulti.x, yy, xx, yy + mapMulti.y);
-                        }
-                        break;
-                    case this.world.table.MAP_TRANSPARENT_WALL:
-                        if (this.miniMapOptions.MAP_TRANSPARENT_WALL.icon) {
-                            p.image(this.miniMapOptions.MAP_TRANSPARENT_WALL.icon, xx, yy, mapMulti.x, mapMulti.y);
-                        } else {
-                            this.miniMapOptions.MAP_TRANSPARENT_WALL.fill ? p.fill(this.miniMapOptions.MAP_TRANSPARENT_WALL.fill) : p.noFill();
-                            if (this.miniMapOptions.MAP_TRANSPARENT_WALL.stroke) {
-                                p.stroke(this.miniMapOptions.MAP_TRANSPARENT_WALL.stroke);
-                                if (this.miniMapOptions.MAP_TRANSPARENT_WALL.strokeWeight) p.strokeWeight(this.miniMapOptions.MAP_TRANSPARENT_WALL.strokeWeight);
-                            } else {
-                                p.noStroke();
-                            }
-                            p.rect(xx, yy, mapMulti.x, mapMulti.y);
-                        }
-                        break;
-                    default:
-                        break;
+                    }
                 }
             }
         }
@@ -478,6 +438,8 @@ class Camera {
         if (this.miniMapOptions.camera.stroke) {
             p.stroke(this.miniMapOptions.camera.stroke);
             if (this.miniMapOptions.camera.strokeWeight) p.strokeWeight(this.miniMapOptions.camera.strokeWeight);
+        } else {
+            p.noStroke();
         }
         p.ellipse(camX, camY, this.miniMapOptions.camera.dia * mapMulti.x, this.miniMapOptions.camera.dia * mapMulti.y);
 
@@ -494,6 +456,8 @@ class Camera {
         if (this.miniMapOptions.sprite.stroke) {
             p.stroke(this.miniMapOptions.sprite.stroke);
             if (this.miniMapOptions.sprite.strokeWeight) p.strokeWeight(this.miniMapOptions.sprite.strokeWeight);
+        } else {
+            p.noStroke();
         }
         this.world.sprites.forEach(sp => {
             if (sp.pos.x > camBlock.x - size.x &amp;&amp; sp.pos.x &lt; camBlock.x + size.x &amp;&amp; sp.pos.y > camBlock.y - size.y &amp;&amp; sp.pos.y &lt; camBlock.y + size.y) {
@@ -767,7 +731,7 @@ class Camera {
                         case this.world.table.MAP_WALL_SHADOW:
                             if (side === 1 &amp;&amp; this.world.map[mapX + (mapY - stepY) * this.world.width] === this.world.table.MAP_DOOR) rayTex = Math.floor(this.world.map[mapX + (mapY - stepY) * this.world.width] / 10) + this.world.table.MAP_DOOR_FRAME;
                             else if (side === 0 &amp;&amp; this.world.map[(mapX - stepX) + mapY * this.world.width] === this.world.table.MAP_DOOR) rayTex = Math.floor(this.world.map[(mapX - stepX) + mapY * this.world.width] / 10) + this.world.table.MAP_DOOR_FRAME;
-                            else rayTex = Math.floor(rayTex/10)+this.world.table.MAP_WALL;
+                            else rayTex = Math.floor(rayTex / 10) * 10 + this.world.table.MAP_WALL;
                             hit = 1;
                             break;
                         default:
@@ -819,7 +783,7 @@ class Camera {
                 }
 
                 if (side === 1 &amp;&amp; rayTex % 10 !== this.world.MAP_DOOR) {
-                    let ttt = this.world.textureMap.get(Math.floor(rayTex/10) + this.world.table.MAP_WALL_SHADOW);
+                    let ttt = this.world.textureMap.get(Math.floor(rayTex / 10) * 10 + this.world.table.MAP_WALL_SHADOW);
                     if (ttt) {
                         if (typeof ttt === "string") {
                             p.stroke(ttt);
@@ -827,14 +791,14 @@ class Camera {
                         } else {
                             let texX = Math.floor(wallX * ttt.width);
                             if (rayDir.y &lt; 0) texX = ttt.width - texX - 1;
-                            p.image(ttt,x, drawStart, 1, lineHeight, texX, 0, 1, ttt.height);
+                            p.image(ttt, x, drawStart, 1, lineHeight, texX, 0, 1, ttt.height);
                         }
                     } else {
                         p.stroke("rgba(0,0,0,0.5)");
                         p.line(x, drawStart, x, drawEnd);
                     }
                 } else if (side === 2) {
-                    let ttt = this.world.textureMap.get(Math.floor(rayTex/10) + this.world.table.MAP_WALL_SHADOW);
+                    let ttt = this.world.textureMap.get(Math.floor(rayTex / 10) * 10 + this.world.table.MAP_WALL_SHADOW);
                     if (!ttt) {
                         if (angleSide === 0) {
                             var shadeOpacity = 0.6 * wallX;
@@ -856,7 +820,7 @@ class Camera {
                             p.line(x, drawStart, x, drawEnd);
                         } else {
                             let texX = Math.floor(wallX * ttt.width);
-                            p.image(ttt,x, drawStart, 1, lineHeight, texX, 0, 1, ttt.height);
+                            p.image(ttt, x, drawStart, 1, lineHeight, texX, 0, 1, ttt.height);
                         }
                         p.pop();
                     }
@@ -880,13 +844,13 @@ class Camera {
 
 
             for (let i = 0; i &lt; this.world.sprites.length; i++) {
-                let spriteX = this.world.sprites[this.spritesOrderBuffer[i]].pos.x - this.pos.x;
-                let spriteY = this.world.sprites[this.spritesOrderBuffer[i]].pos.y - this.pos.y;
+                const sp = this.world.sprites[this.spritesOrderBuffer[i]];
+                let spriteX = sp.pos.x - this.pos.x;
+                let spriteY = sp.pos.y - this.pos.y;
 
                 let invDet = 1 / (this.plane.x * this.dir.y - this.dir.x * this.plane.y);
                 let transformX = invDet * (this.dir.y * spriteX - this.dir.x * spriteY);
                 let transformY = invDet * (this.plane.x * spriteY - this.plane.y * spriteX);
-
                 if (transformY > 0) {
                     for (tp; tp >= 0; tp--) {
                         let tpDist = (this.pos.x - tpWalls[tp].mapX) * (this.pos.x - tpWalls[tp].mapX) + (this.pos.y - tpWalls[tp].mapY) * (this.pos.y - tpWalls[tp].mapY);
@@ -898,7 +862,7 @@ class Camera {
                     }
 
                     let spriteHeight = Math.abs(Math.floor(canvas.height / transformY));
-                    let baseline = (0.5 + verticalAdjustment) * canvas.height;
+                    let baseline = (0.5 + verticalAdjustment - sp.yAdjustment) * canvas.height;
                     let spDrawStartY = baseline - spriteHeight / 2;
                     let spriteScreenX = Math.floor(canvas.width / 2) * (1 + transformX / transformY);
                     let spriteWidth = Math.abs(Math.floor(canvas.height / transformY));
@@ -925,18 +889,18 @@ class Camera {
                         }
                     }
                     if (clipStartX !== clipEndX &amp;&amp; clipStartX &lt; canvas.width &amp;&amp; clipEndX > 0) {
-                        let scaleDelta = this.world.sprites[this.spritesOrderBuffer[i]].width / spriteWidth;
+                        let scaleDelta = sp.width / spriteWidth;
                         let drawXStart = Math.floor((clipStartX - spDrawStartX) * scaleDelta);
                         if (drawXStart &lt; 0) drawXStart = 0;
                         let drawXEnd = Math.floor((clipEndX - clipStartX) * scaleDelta) + 1;
-                        if (drawXEnd > this.world.sprites[this.spritesOrderBuffer[i]].width) drawXEnd = this.world.sprites[this.spritesOrderBuffer[i]].width;
+                        if (drawXEnd > sp.width) drawXEnd = sp.width;
                         let drawWidth = clipEndX - clipStartX;
                         if (drawWidth &lt; 0) drawWidth = 0;
                         let drawAng = Math.atan2(spriteY, spriteX);
-                        this.world.sprites[this.spritesOrderBuffer[i]].updateRotation(drawAng);
+                        sp.updateRotationFrame(drawAng);
                         p.push();
                         p.drawingContext.imageSmoothingEnabled = false;
-                        p.image(this.world.sprites[this.spritesOrderBuffer[i]].buffer, clipStartX, spDrawStartY, drawWidth, spriteHeight, drawXStart, 0, drawXEnd, this.world.sprites[this.spritesOrderBuffer[i]].height)
+                        p.image(sp.buffer, clipStartX, spDrawStartY, drawWidth, spriteHeight, drawXStart, 0, drawXEnd, sp.height)
                         p.pop();
                     }
                 }
@@ -978,7 +942,7 @@ export default Camera;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Jan 29 2024 13:12:24 GMT+0000 (Greenwich Mean Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Jan 31 2024 11:16:56 GMT+0000 (Greenwich Mean Time)
 </footer>
 
 <script> prettyPrint(); </script>

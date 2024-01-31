@@ -327,7 +327,8 @@ camera.teleportTo(positionInNewWorld, facingDirectionInNewWorld, newWorld);
 `Sprite` is object for things that are "floating" in the world, which means their position can be changed. To create a `Sprite`, use `RayCaster.createSprite()`.
 ```js
 function preload(){
-    spriteImg = loadImage(path)
+    spriteImg = loadImage(path);
+    //!you should not put the code to create sprite here as image might not be loaded
 }
 ...
 let spritePosition = {x: 11.5, y: 11.5}, spriteWidth = 100, spriteHeight = 100;
@@ -341,8 +342,8 @@ new p5((pInst) => {
     }
 
     pInst.setup = (){
-        let spritePosition = {x: 11.5, y: 11.5}, spriteWidth = 100, spriteHeight = 100, angle = 0;
-        RayCaster.createSprite(spriteImg, spritePosition, spriteWidth, spriteHeight, angle, pInst);
+        let spritePosition = {x: 11.5, y: 11.5}, spriteWidth = 100, spriteHeight = 100, angle = 0, yAdjustment = 0, animationGap = 0;
+        RayCaster.createSprite(spriteImg, spritePosition, spriteWidth, spriteHeight, angle, yAdjustment, animationGap, pInst);
     }
 })
 ```
@@ -354,11 +355,15 @@ After creating a sprite, you can add it to a world by calling `World.addSprite(s
 
 #### Animation
 
-To advance the sprite animation, call `Sprite.nextAnimationFrame()` or use `Sprite.updateAnimationFrame(frameNo)` to jump to a frame, note that `frameNo` start with 0.
+To advance the sprite animation, call `Sprite.nextAnimationFrame()` or use `Sprite.updateAnimationFrame(frameNo)` to jump to a frame, note that `frameNo` start with 0. You can also set the `Sprite.animationGap` by `Sprite.setAnimationGap()` and update with `Sprite.update(mainCanvasFrameCount)` to update animation frame.
+
+#### Advance animation
+
+You can have animation group for your `Sprite`, so your `Sprite` can have different sets of animation switched by user interaction. By default, `Sprite.animationGroups` is an array contain an array of all animation frames from the `Sprite.src`, something like `[[0,1,2,3,4]]`. If the last two frames of the animation should be in another group, you can call `Sprite.setAnimationGroups([[0,1,2], [3,4]])` to separate them into another group, then call `Sprite.setCurrentAnimationGroup(1)` to set the animation to the second one. This is useful for switching between idle and running animation, etc.
 
 #### Movement
 
-Similar to `Camera`, `Sprite` will refer to the world it is in to constrain the movement. use `Sprite.move({x, y})` to move a sprite and `Sprite.rotate(angle)` to rotate a sprite.
+Similar to `Camera`, `Sprite` will refer to the world it is in to constrain the movement. use `Sprite.move({x, y})` to move a sprite and `Sprite.rotate(angle)` to rotate a sprite. Use `Sprite.setYAdjustment()` to set update `Sprite.yAdjustment`, which can move the sprite up and down.
 
 ## Controls
 The library includes three basic controllers to handle inputs from mouse and keyboard. They should be enough for most of the cases, however, if you wish to have a more innovative and different way of interaction, you should write your own control methods.
