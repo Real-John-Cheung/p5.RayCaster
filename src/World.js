@@ -102,6 +102,70 @@ class World {
     }
 
     /**
+     * 
+     * @param {string} floorMapData or a 1D/2D array, or a single number indicating the texture for all blocks
+     */
+    loadFloor(floorMapData){
+        if (typeof floorMapData === "number") {
+            this.floor = floorMapData;
+            return;
+        }
+        this.floor = new Array(this.width * this.height);
+        if(typeof floorMapData === "string") {
+            floorMapData.split(",").forEach(data => {
+                this.floor.push(parseInt(data));
+            });
+            return;
+        }
+        if(Array.isArray(floorMapData) && floorMapData.length){
+            if (typeof floorMapData[0] === "number") {
+                floorMapData.forEach(data => this.floor.push(data));
+                return;
+            }
+            if (typeof floorMapData[0][0] === "number") {
+                for (let y = 0; y < floorMapData.length; y++) {
+                    for (let x = 0; x < floorMapData[0].length; x++) {
+                        let idx = x + y * this.width;
+                        this.floor[idx] = floorMapData[y][x];
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param {string} ceilingMapData or a 1D/2D array, or a single number indicating the texture for all blocks
+     */
+    loadCeiling(ceilingMapData){
+        if (typeof ceilingMapData === "number") {
+            this.ceiling = ceilingMapData;
+            return;
+        }
+        this.ceiling = new Array(this.width * this.height);
+        if(typeof ceilingMapData === "string") {
+            ceilingMapData.split(",").forEach(data => {
+                this.ceiling.push(parseInt(data));
+            });
+            return;
+        }
+        if(Array.isArray(ceilingMapData) && ceilingMapData.length){
+            if (typeof ceilingMapData[0] === "number") {
+                ceilingMapData.forEach(data => this.ceiling.push(data));
+                return;
+            }
+            if (typeof ceilingMapData[0][0] === "number") {
+                for (let y = 0; y < ceilingMapData.length; y++) {
+                    for (let x = 0; x < ceilingMapData[0].length; x++) {
+                        let idx = x + y * this.width;
+                        this.ceiling[idx] = ceilingMapData[y][x];
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * this function will not copy the Map
      * @param {Map} textureMap 
      */

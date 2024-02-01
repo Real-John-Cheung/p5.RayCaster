@@ -34,6 +34,7 @@ function preload(){
     pushWallT = loadImage("./assets/push wall.gif");
     transparentWallT = loadImage("./assets/trans.gif");
     doorT = loadImage("./assets/door.gif");
+    floorT = loadImage("./assets/floor.gif");
 }
 
 
@@ -44,8 +45,9 @@ function setup() {
     background(0)
     world = RayCaster.createWorld(24, 24);
     world.loadMap(mapData);
-    textureMap = RayCaster.createTextureMap(1, wall0T, 11, wall1T, 2, "rgba(0,0,0,0.4)", 12, "rgba(0,0,0,0.4)", 3, doorT, 4, doorT, 5, pushWallT, 6, pillarT, 7, wall0T, 8, wall0T, 9 , transparentWallT);
+    textureMap = RayCaster.createTextureMap(1, wall0T, 11, wall1T, 2, "rgba(0,0,0,0.4)", 12, "rgba(0,0,0,0.4)", 3, doorT, 4, doorT, 5, pushWallT, 6, pillarT, 7, wall0T, 8, wall0T, 9 , transparentWallT, -1, floorT);
     world.loadTextureMap(textureMap);
+    world.loadFloor(-1);
     camera = RayCaster.createCamera({x:20,y:20}, {x:-1, y:-1}, 0.5, world, canvas);
     keyboardController = RayCaster.initKeyboardControl();
     pointerLockController = RayCaster.initPointerLockControl(camera, canvas.canvas);
@@ -141,6 +143,7 @@ function draw() {
     cameraMove()
     doorInteraction();
     worldUpdate();
+    fill(255);
 }
 
 function toggleMiniMap(){

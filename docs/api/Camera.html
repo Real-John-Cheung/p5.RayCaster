@@ -984,6 +984,237 @@
     
 
     
+    <h4 class="name" id="renderFloorAndCeiling"><span class="type-signature"></span>renderFloorAndCeiling<span class="signature">(floor<span class="signature-attributes">opt</span>, ceiling<span class="signature-attributes">opt</span>, canvas<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>floor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">render ray casting floor ?</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ceiling</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">render ray casting ceiling?</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>canvas</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">p5.Renderer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    this.canvas
+                
+                </td>
+            
+
+            <td class="description last">a p5.Renderer (for main canvas) or p5.Graphics</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Camera.js.html">Camera.js</a>, <a href="Camera.js.html#line540">line 540</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="renderFrame"><span class="type-signature"></span>renderFrame<span class="signature">(canvas)</span><span class="type-signature"></span></h4>
     
 
@@ -1085,7 +1316,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Camera.js.html">Camera.js</a>, <a href="Camera.js.html#line892">line 892</a>
+        <a href="Camera.js.html">Camera.js</a>, <a href="Camera.js.html#line954">line 954</a>
     </li></ul></dd>
     
 
@@ -1453,7 +1684,7 @@
     
 
     
-    <h4 class="name" id="renderRayCasting"><span class="type-signature"></span>renderRayCasting<span class="signature">(canvas<span class="signature-attributes">opt</span>, noSprites<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="renderRayCasting"><span class="type-signature"></span>renderRayCasting<span class="signature">(noSprites<span class="signature-attributes">opt</span>, canvas<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
@@ -1501,45 +1732,6 @@
 
         <tr>
             
-                <td class="name"><code>canvas</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">p5.Renderer</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    this.canvas
-                
-                </td>
-            
-
-            <td class="description last">a p5.Renderer (for main canvas) or p5.Graphics</td>
-        </tr>
-
-    
-
-        <tr>
-            
                 <td class="name"><code>noSprites</code></td>
             
 
@@ -1573,6 +1765,45 @@
             
 
             <td class="description last">if true, do not render sprites</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>canvas</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">p5.Renderer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    this.canvas
+                
+                </td>
+            
+
+            <td class="description last">a p5.Renderer (for main canvas) or p5.Graphics</td>
         </tr>
 
     
@@ -1613,7 +1844,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Camera.js.html">Camera.js</a>, <a href="Camera.js.html#line532">line 532</a>
+        <a href="Camera.js.html">Camera.js</a>, <a href="Camera.js.html#line595">line 595</a>
     </li></ul></dd>
     
 
@@ -1649,7 +1880,7 @@
     
 
     
-    <h4 class="name" id="renderSkyBox"><span class="type-signature"></span>renderSkyBox<span class="signature">(canvas<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="renderSkyBox"><span class="type-signature"></span>renderSkyBox<span class="signature">(sky<span class="signature-attributes">opt</span>, ground<span class="signature-attributes">opt</span>, canvas<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
@@ -1697,6 +1928,84 @@
 
         <tr>
             
+                <td class="name"><code>sky</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">if true, render sky</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ground</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">if true, render ground</td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>canvas</code></td>
             
 
@@ -1770,7 +2079,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Camera.js.html">Camera.js</a>, <a href="Camera.js.html#line448">line 448</a>
+        <a href="Camera.js.html">Camera.js</a>, <a href="Camera.js.html#line450">line 450</a>
     </li></ul></dd>
     
 
@@ -2616,7 +2925,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Jan 31 2024 12:10:38 GMT+0000 (Greenwich Mean Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Feb 01 2024 12:26:09 GMT+0000 (Greenwich Mean Time)
 </footer>
 
 <script> prettyPrint(); </script>

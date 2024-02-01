@@ -471,93 +471,156 @@ class Camera {
 
     /**
      * render sky box
+     * @param {boolean} [sky=true] if true, render sky
+     * @param {boolean} [ground=true] if true, render ground 
      * @param {p5.Renderer} [canvas=this.canvas] a p5.Renderer (for main canvas) or p5.Graphics
      */
-    renderSkyBox(canvas = this.canvas) {
+    renderSkyBox(sky = true, ground = true, canvas = this.canvas) {
+        if (!sky &amp;&amp; ! ground) return;
         const verticalAdjustment = Math.tan(this.tilting);
         const skyPortion = 0.5 + verticalAdjustment;
         const groundPortion = 1 - skyPortion;
         const p = canvas._isMainCanvas ? canvas._pInst : canvas;
         const skyBox = this.world.skyBox;
         p.push();
-        if (typeof skyBox.sky === "string") {
-            p.fill(skyBox.sky);
-            p.noStroke();
-            p.rect(0, 0, p.width, p.height * skyPortion);
-        } else {
-            let img = skyBox.sky
-            p.image(img, 0, 0, p.width, p.height * skyPortion, 0, img.height - p.height * skyPortion, p.width, p.height * skyPortion);
+        if (sky) {
+            if (typeof skyBox.sky === "string") {
+                p.fill(skyBox.sky);
+                p.noStroke();
+                p.rect(0, 0, p.width, p.height * skyPortion);
+            } else {
+                let img = skyBox.sky
+                p.image(img, 0, 0, p.width, p.height * skyPortion, 0, img.height - p.height * skyPortion, p.width, p.height * skyPortion);
+            }
+            if (skyBox.back || skyBox.front || skyBox.middle) {
+                let deltaX = this.world.width / 2 - this.pos.x;
+                let deltaY = this.world.height / 2 - this.pos.y;
+                let rvX = (this.world.width / 2) * this.dir.x;
+                let rvY = (this.world.height / 2) * this.dir.y;
+                let edgeVector = { x: rvX + deltaX, y: rvY + deltaY };
+                let edge = { x: this.pos.x + edgeVector.x, y: this.pos.y + edgeVector.y };
+                let distFromEdge = Math.sqrt((edge.x - this.pos.x) * (edge.x - this.pos.x) + (edge.y - this.pos.y) * (edge.y - this.pos.y));
+                let dist2 = distFromEdge + distFromEdge;
+    
+                let dirOffset = (Math.atan2(this.dir.y, this.dir.x) + Math.PI) / Math.PI; // offset of the sky box;
+                let foreOffset = Math.floor(dirOffset * p.width);
+                let midOffset = Math.floor(foreOffset / 1.5);
+                let backOffset = Math.floor(foreOffset / 2);
+                let skyH = p.height * skyPortion;
+                if (skyBox.back) {
+                    let backWidth = p.width / 2;
+                    let backHeight = skyH / 2;
+                    p.image(skyBox.back, backOffset, backHeight, backWidth, backHeight, 0, skyH - skyBox.back.height, skyBox.back.width, skyBox.back.height);
+                    p.image(skyBox.back, backOffset - backWidth, backHeight, backWidth, backHeight, 0, skyH - skyBox.back.height, skyBox.back.width, skyBox.back.height);
+                    if (dirOffset > 1) {
+                        p.image(skyBox.back, backOffset - p.width, backHeight, backWidth, backHeight, 0, skyH - skyBox.back.height, skyBox.back.width, skyBox.back.height);
+                    }
+                    if (dirOffset &lt; 1) {
+                        p.image(skyBox.background, backOffset + backWidth, backHeight, backWidth, backHeight, 0, skyH - skyBox.background.height, skyBox.background.width, skyBox.background.height);
+                    }
+                }
+                if (skyBox.middle) {
+                    let midWidth = p.width / 1.5;
+                    let midHeight = skyH / 1.5;
+                    let midYPos = (skyH / 3 - this.world.width) + distFromEdge;
+                    p.image(skyBox.middle, midOffset - midWidth, midYPos, midWidth, midHeight, 0, skyH - skyBox.middle.height, skyBox.middle.width, skyBox.middle.height)
+                    if (dirOffset &lt; 1.5) {
+                        p.image(skyBox.middle, midOffset, midYPos, midWidth, midHeight, 0, skyH - skyBox.middle.height, skyBox.middle.width, skyBox.middle.height);
+                    }
+                    if (dirOffset &lt; 0.5) {
+                        p.image(skyBox.middle, midOffset + midWidth, midYPos, midWidth, midHeight, 0, skyH - skyBox.middle.height, skyBox.middle.width, skyBox.middle.height)
+                    }
+                    if (dirOffset > 1) {
+                        p.image(skyBox.middle, midOffset - midWidth * 2, midYPos, midWidth, midHeight, 0, skyH - skyBox.middle.height, skyBox.middle.width, skyBox.middle.height)
+                    }
+                }
+                if (skyBox.front) {
+                    p.image(skyBox.front, foreOffset - p.width, (- this.world.width * 2) + dist2, p.width, skyH, 0, skyH - skyBox.front.height, skyBox.front.width, skyBox.front.height)
+                    if (dirOffset &lt; 1) {
+                        p.image(skyBox.front, foreOffset, (- this.world.width * 2) + dist2, p.width, skyH, 0, skyH - skyBox.front.height, skyBox.front.width, skyBox.front.height)
+                    }
+                    if (dirOffset > 1) {
+                        p.image(skyBox.front, foreOffset - p.width * 2, (- this.world.width * 2) + dist2, p.width, skyH, 0, skyH - skyBox.front.height, skyBox.front.width, skyBox.front.height)
+    
+                    }
+                }
+            }
         }
-        if (skyBox.back || skyBox.front || skyBox.middle) {
-            let deltaX = this.world.width / 2 - this.pos.x;
-            let deltaY = this.world.height / 2 - this.pos.y;
-            let rvX = (this.world.width / 2) * this.dir.x;
-            let rvY = (this.world.height / 2) * this.dir.y;
-            let edgeVector = { x: rvX + deltaX, y: rvY + deltaY };
-            let edge = { x: this.pos.x + edgeVector.x, y: this.pos.y + edgeVector.y };
-            let distFromEdge = Math.sqrt((edge.x - this.pos.x) * (edge.x - this.pos.x) + (edge.y - this.pos.y) * (edge.y - this.pos.y));
-            let dist2 = distFromEdge + distFromEdge;
-
-            let dirOffset = (Math.atan2(this.dir.y, this.dir.x) + Math.PI) / Math.PI; // offset of the sky box;
-            let foreOffset = Math.floor(dirOffset * p.width);
-            let midOffset = Math.floor(foreOffset / 1.5);
-            let backOffset = Math.floor(foreOffset / 2);
-            let skyH = p.height * skyPortion;
-            if (skyBox.back) {
-                let backWidth = p.width / 2;
-                let backHeight = skyH / 2;
-                p.image(skyBox.back, backOffset, backHeight, backWidth, backHeight, 0, skyH - skyBox.back.height, skyBox.back.width, skyBox.back.height);
-                p.image(skyBox.back, backOffset - backWidth, backHeight, backWidth, backHeight, 0, skyH - skyBox.back.height, skyBox.back.width, skyBox.back.height);
-                if (dirOffset > 1) {
-                    p.image(skyBox.back, backOffset - p.width, backHeight, backWidth, backHeight, 0, skyH - skyBox.back.height, skyBox.back.width, skyBox.back.height);
-                }
-                if (dirOffset &lt; 1) {
-                    p.image(skyBox.background, backOffset + backWidth, backHeight, backWidth, backHeight, 0, skyH - skyBox.background.height, skyBox.background.width, skyBox.background.height);
-                }
+        if (ground) {
+            if (typeof skyBox.ground === "string") {
+                p.fill(skyBox.ground);
+                p.noStroke();
+                p.rect(0, p.height * skyPortion, p.width, p.height * groundPortion);
+            } else {
+                let img = skyBox.sky
+                p.image(img, 0, p.height * skyPortion, p.width, p.height * groundPortion, 0, img.height - p.height * groundPortion, p.width, p.height * groundPortion);
             }
-            if (skyBox.middle) {
-                let midWidth = p.width / 1.5;
-                let midHeight = skyH / 1.5;
-                let midYPos = (skyH / 3 - this.world.width) + distFromEdge;
-                p.image(skyBox.middle, midOffset - midWidth, midYPos, midWidth, midHeight, 0, skyH - skyBox.middle.height, skyBox.middle.width, skyBox.middle.height)
-                if (dirOffset &lt; 1.5) {
-                    p.image(skyBox.middle, midOffset, midYPos, midWidth, midHeight, 0, skyH - skyBox.middle.height, skyBox.middle.width, skyBox.middle.height);
-                }
-                if (dirOffset &lt; 0.5) {
-                    p.image(skyBox.middle, midOffset + midWidth, midYPos, midWidth, midHeight, 0, skyH - skyBox.middle.height, skyBox.middle.width, skyBox.middle.height)
-                }
-                if (dirOffset > 1) {
-                    p.image(skyBox.middle, midOffset - midWidth * 2, midYPos, midWidth, midHeight, 0, skyH - skyBox.middle.height, skyBox.middle.width, skyBox.middle.height)
-                }
-            }
-            if (skyBox.front) {
-                p.image(skyBox.front, foreOffset - p.width, (- this.world.width * 2) + dist2, p.width, skyH, 0, skyH - skyBox.front.height, skyBox.front.width, skyBox.front.height)
-                if (dirOffset &lt; 1) {
-                    p.image(skyBox.front, foreOffset, (- this.world.width * 2) + dist2, p.width, skyH, 0, skyH - skyBox.front.height, skyBox.front.width, skyBox.front.height)
-                }
-                if (dirOffset > 1) {
-                    p.image(skyBox.front, foreOffset - p.width * 2, (- this.world.width * 2) + dist2, p.width, skyH, 0, skyH - skyBox.front.height, skyBox.front.width, skyBox.front.height)
-
-                }
-            }
-        }
-        if (typeof skyBox.ground === "string") {
-            p.fill(skyBox.ground);
-            p.noStroke();
-            p.rect(0, p.height * skyPortion, p.width, p.height * groundPortion);
-        } else {
-            let img = skyBox.sky
-            p.image(img, 0, p.height * skyPortion, p.width, p.height * groundPortion, 0, img.height - p.height * groundPortion, p.width, p.height * groundPortion);
         }
         p.pop();
     }
 
     /**
-     * render the ray casting content
+     * 
+     * @param {boolean} [floor = true] render ray casting floor ? 
+     * @param {boolean} [ceiling = true] render ray casting ceiling?
      * @param {p5.Renderer} [canvas=this.canvas] a p5.Renderer (for main canvas) or p5.Graphics
-     * @param {boolean} [noSprites = false] if true, do not render sprites
      */
-    renderRayCasting(canvas = this.canvas, noSprites = false) {
+    renderFloorAndCeiling( floor = true, ceiling = true, canvas=this.canvas){
+        const p = canvas._isMainCanvas ? canvas._pInst : canvas;
+        if (!(p.pixels &amp;&amp; p.pixels.length > 0)) p.loadPixels();
+        const verticalAdjustment = Math.tan(this.tilting);
+        const d =p.pixelDensity();
+        for (let y = 0; y &lt; p.height; y++) {
+            let delta = y - (0.5 + verticalAdjustment) * p.height; // distance from horizon
+            if (delta === 0) continue;
+            if (!floor &amp;&amp; delta > 0) return;
+            if (!ceiling &amp;&amp; delta &lt; 0) continue;
+
+            let rayDir0 = {x: this.dir.x - this.plane.x, y: this.dir.y - this.plane.y};
+            let rayDir1 = {x: this.dir.x + this.plane.x, y: this.dir.y + this.plane.y};
+            
+            let rowDistance = (0.5 * p.height) / (delta);    
+            let stepX = rowDistance * (rayDir1.x - rayDir0.x) / p.width;
+            let stepY = rowDistance * (rayDir1.y - rayDir0.y) / p.width;
+            let xx = this.pos.x + rowDistance * rayDir0.x;
+            let yy = this.pos.y + rowDistance * rayDir0.y;
+            for (let x = 0; x &lt; p.width; x++) {
+                let blockX = Math.floor(xx);
+                let blockY = Math.floor(yy);
+                let blockIdx = blockX + blockY * this.world.width;
+                let blockN; 
+                if (delta > 0) {
+                    blockN = typeof this.world.floor === "number" ? this.world.floor : this.world.floor[blockIdx];
+                } else {
+                    blockN = typeof this.world.ceiling === "number" ? this.world.ceiling : this.world.ceiling[blockIdx];
+                }
+                let tex = this.world.textureMap.get(blockN);
+                let texX = Math.floor((xx - blockX) * tex.width) &amp; (tex.width - 1);
+                let texY = Math.floor((yy - blockY) * tex.height) &amp; (tex.height - 1);
+                if (!(tex.pixels &amp;&amp; tex.pixels.length > 0)) tex.loadPixels();
+                let texIdx = 4 * (texX + texY * tex.width);
+                for(let i = 0; i &lt; d; i ++) {
+                    for (let j = 0; j &lt; d; j++){
+                      let index = 4 * ((y * d + j) * p.width * d + (x * d + i));
+                      p.pixels[index] = tex.pixels[texIdx];
+                      p.pixels[index + 1] = tex.pixels[texIdx + 1];
+                      p.pixels[index + 2] = tex.pixels[texIdx + 2];
+                      p.pixels[index + 3] = tex.pixels[texIdx + 3];
+                    }
+                  }
+                xx += stepX;
+                yy += stepY;
+            }
+        }
+        p.updatePixels();
+    }
+
+    /**
+     * render the ray casting content
+     * @param {boolean} [noSprites = false] if true, do not render sprites
+     * @param {p5.Renderer} [canvas=this.canvas] a p5.Renderer (for main canvas) or p5.Graphics
+     */
+    renderRayCasting(noSprites = false, canvas = this.canvas) {
         const MOVE_SPEED = 0.125;
         const TURN_SPEED = 0.03;
         const p = canvas._isMainCanvas ? canvas._pInst : canvas;
@@ -860,14 +923,13 @@ class Camera {
                         }
                     }
 
-                    let spriteHeight = Math.abs(Math.floor(canvas.height / transformY));
+                    let spriteHeight = Math.abs(Math.floor(canvas.height / transformY)) * sp.scaleP.y;
                     let baseline = (0.5 + verticalAdjustment - sp.yAdjustment) * canvas.height;
                     let spDrawStartY = baseline - spriteHeight / 2;
                     let spriteScreenX = Math.floor(canvas.width / 2) * (1 + transformX / transformY);
-                    let spriteWidth = Math.abs(Math.floor(canvas.height / transformY));
+                    let spriteWidth = Math.abs(Math.floor(canvas.height / transformY)) * sp.scaleP.x;
                     let spDrawStartX = Math.floor(spriteScreenX - spriteWidth / 2);
                     let spDrawEndX = spDrawStartX + spriteWidth;
-
                     let clipStartX = spDrawStartX;
                     let clipEndX = spDrawEndX;
                     if (spDrawStartX &lt; -spriteWidth) {
@@ -918,8 +980,21 @@ class Camera {
      * @param {p5.Renderer} canvas the main canvas or a p5.Graphics object
      */
     renderFrame(canvas = this.canvas) {
-        this.renderSkyBox(canvas);
-        this.renderRayCasting(canvas, false);
+        if (this.world.ceiling || this.world.floor){
+            if (this.world.ceiling &amp;&amp; this.world.floor) {
+                this.renderFloorAndCeiling(canvas);
+            } else if (this.world.ceiling){
+                this.renderFloorAndCeiling(false, true, canvas);
+                this.renderSkyBox(false, true, canvas);
+            } else {
+                this.renderFloorAndCeiling(true, false, canvas);
+                this.renderSkyBox(true, false, canvas);
+                
+            }
+        } else {
+            this.renderSkyBox(canvas);
+        }
+        this.renderRayCasting(false, canvas);
     }
 
 }
@@ -941,7 +1016,7 @@ export default Camera;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Jan 31 2024 12:10:38 GMT+0000 (Greenwich Mean Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Feb 01 2024 12:26:09 GMT+0000 (Greenwich Mean Time)
 </footer>
 
 <script> prettyPrint(); </script>

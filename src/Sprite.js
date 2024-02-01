@@ -19,6 +19,7 @@ class Sprite {
         this.pInst = p5Inst;
         this.yAdjustment = yAdjustment;
         this.animationGap = animationGap;
+        this.scaleP = {x: 1, y: 1};
         //
         this.buffer = null;
         if (this.pInst !== null) {
@@ -180,6 +181,28 @@ class Sprite {
      */
     rotateTo(angle){
         this.ang = angle
+    }
+
+    /**
+     * 
+     * @param {number} xRatio 
+     * @param {number} yRatio 
+     */
+    scale(xRatio, yRatio){
+        if (arguments.length === 1) yRatio = xRatio
+        this.scaleP.x *= xRatio;
+        this.scaleP.y *= yRatio;
+    }
+
+    /**
+     * scale to the ratio relative to the origin size
+     * @param {number} xRatio 
+     * @param {number} yRatio 
+     */
+    scaleTo(xRatio, yRatio){
+        if (arguments.length === 1) yRatio = xRatio
+        this.scaleP.x = xRatio;
+        this.scaleP.y = yRatio;
     }
 
     /**

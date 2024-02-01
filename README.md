@@ -120,6 +120,11 @@ Below is an example map with the block kind number overlaying on it
 
 ![map.png](./images/map.png)
 
+#### floor and ceiling
+You can have floor and ceiling for each block in the map too, they are stored in `World.floor` and `World.ceiling` in the same format as `World.map`. By default they are `undefined`. To load the floor and ceiling data, use `World.loadFloor()` and/or `World.loadCeiling()`. You should use numbers that are not in `World.map` to represent ceiling and floor texture, and include the corresponding entry in `World.textureMap`. A good way to do that is to use negative numbers for floor and ceiling textures.
+
+Note that ray casting floor and ceiling are not as fast as ray casting wall.
+
 #### textureMap
 `World.textureMap` is a `Map` storing texture for each of the block. The entries of it are numbers that appear in `World.map`, with the corresponding value denoting the texture (either a css string or a `p5.Image/p5.Graphics` object);
 
@@ -199,11 +204,18 @@ For a camera to work, it need to be attached to a `World`, if not ready done so 
 
 To render a frame, call `Camera.renderFrame()`. This will render the current view of the camera to the canvas it was assigned to, alternatively, you can render to another canvas or `p5.Graphics` object by passing it to the function.
 
-If you want more control over when the different parts of the scene is rendered, you can call the following functions individually. Same as the `renderFrame()` function, a target canvas can be passed in.
+If you want more control over when the different parts of the scene is rendered, you can call the following functions individually. Same as the `renderFrame()` function, a target canvas can be passed in. Please see the api documents for the details of each function.
 ```js
 Camera.renderSkyBox(); //render the sky box
+Camera.renderSkyBox(true, false) // render sky only
+
+// rendering ray casting floor and ceiling can be very slow in high res
+Camera.renderFloorAndCeiling(); //render the ray casting floor and ceiling
+Camera.renderFloorAndCeiling(true, false); //render the ray casting floor only
+//
+
 Camera.renderRayCasting(); // render walls and sprites
-Camera.renderRayCasting(canvas, true); // render walls only
+Camera.renderRayCasting(true); // render walls only
 ```
 
 For the ray casting scene, the library will recognize the x surfaces of the block to be the "darker" side so it can be distinguished from y surfaces. The renderer will apply a transparent layer of shadow to the texture, which you can customize by setting the texture for corresponding`MAP_WALL_SHADOW` in `World.textureMap`. For example, if you want to set the shadow on block kind `11`, set it by `textureMap.set(12, texture)`. setting the shadow texture to something like `rgba(255,255,255,0.5)` will "invert" the "lighting" as x surfaces will be brighter with a white tint.
@@ -366,6 +378,9 @@ You can have animation group for your `Sprite`, so your `Sprite` can have differ
 #### Movement
 
 Similar to `Camera`, `Sprite` will refer to the world it is in to constrain the movement. use `Sprite.move({x, y})` to move a sprite and `Sprite.rotate(angle)` to rotate a sprite. Use `Sprite.setYAdjustment()` to set or update `Sprite.yAdjustment`, which can move the sprite up and down.
+
+#### Scale
+You can use `Sprite.scale()` to scale a sprite, which will take the previous scale into account. To scale according to the original size, use `Sprite.scaleTo()`, you can scale the two axises of the sprite separately, e.g. `Sprite.scale(0.5, 1)`.
 
 ## Controls
 The library includes three basic controllers to handle inputs from mouse and keyboard. They should be enough for most of the cases, however, if you wish to have a more innovative and different way of interaction, you should write your own control methods.

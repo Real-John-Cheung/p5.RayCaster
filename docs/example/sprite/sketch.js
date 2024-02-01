@@ -36,6 +36,7 @@ function setup() {
     sprites.push(RayCaster.createSprite(star, { x: 7.5, y: 7.5 }, 100, 100));
     sprites[0].setYAdjustment(0.1);
     sprites[0].setAnimationGap(15);
+    sprites[0].scale(0.5);
     // guard sprite
     sprites.push(RayCaster.createSprite(guard, { x: 1.5, y: 1.5 }, 128, 128, - Math.PI));
     sprites[1].setYAdjustment(0);
